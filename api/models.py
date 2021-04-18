@@ -1,10 +1,7 @@
 from django.db import models
-
-# Create your models here.
-import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
+import uuid
 
 class UserManager(BaseUserManager):
     '''
@@ -37,7 +34,6 @@ class UserManager(BaseUserManager):
         user.save()
 
         return user
-
 
 class User(AbstractBaseUser):
 

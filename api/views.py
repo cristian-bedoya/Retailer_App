@@ -1,20 +1,15 @@
 from django.shortcuts import render
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
 from .models import UserProfile , Order, Payment, Shipping
-from .serializer import *
-
-
-# from rest_framework_swagger.views import get_swagger_view
+from .serializer import UserProfileSerializer, UserRegistrationSerializer, UserLoginSerializer
+from .serializer import OrderSerializer, ShippingSerializer, PaymentSerializer
 
 class UserRegistrationView(CreateAPIView):
 
@@ -53,7 +48,6 @@ class UserLoginView(RetrieveAPIView):
 
         return Response(response, status=status_code)
 
-
 class UserProfileView(RetrieveAPIView):
 
     permission_classes = (IsAuthenticated,)
@@ -81,6 +75,59 @@ class UserProfileView(RetrieveAPIView):
                 }
         return Response(response, status=status_code)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def users_list(request):
+    """
+ List  user, or create a new payment.
+ """
+    if request.method == 'GET':
+        data = []
+        nextPage = 1
+        previousPage = 1
+        user = UserProfile.objects.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(user, 5)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            data = paginator.page(1)
+        except EmptyPage:
+            data = paginator.page(paginator.num_pages)
+
+        serializer = UserProfileSerializer(data,context={'request': request} ,many=True)
+        if data.has_next():
+            nextPage = data.next_page_number()
+        if data.has_previous():
+            previousPage = data.previous_page_number()
+
+        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api user/?page=' + str(nextPage), 'prevlink': '/api user/?page=' + str(previousPage)})
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def users_detail(request, pk):
+    """
+ Retrieve, update or delete a payment by id/pk.
+ """
+    try:
+        payment = Shipping.objects.get(pk=pk)
+    except payment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(payment,context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UserProfileSerializer(payment, data=request.data,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        payment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -123,6 +170,9 @@ def orders_detail(request, pk):
     """
  Retrieve, update or delete a order by id/pk.
  """
+    if pk == "serializers":
+        return
+
     if "[" and "]" in pk:
         pk = pk[1:-1].split(",")
 
@@ -140,6 +190,8 @@ def orders_detail(request, pk):
     except :
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+
     if request.method == 'GET':
         return Response(serializer.data)
 
@@ -152,4 +204,126 @@ def orders_detail(request, pk):
 
     elif request.method == 'DELETE':
         order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def shippings_list(request):
+    """
+ List  shippings, or create a new payment.
+ """
+    if request.method == 'GET':
+        data = []
+        nextPage = 1
+        previousPage = 1
+        shippings = Shipping.objects.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(shippings, 5)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            data = paginator.page(1)
+        except EmptyPage:
+            data = paginator.page(paginator.num_pages)
+
+        serializer = ShippingSerializer(data,context={'request': request} ,many=True)
+        if data.has_next():
+            nextPage = data.next_page_number()
+        if data.has_previous():
+            previousPage = data.previous_page_number()
+
+        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api shippings/?page=' + str(nextPage), 'prevlink': '/api shippings/?page=' + str(previousPage)})
+
+    elif request.method == 'POST':
+        serializer = ShippingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def shippings_detail(request, pk):
+    """
+ Retrieve, update or delete a payment by id/pk.
+ """
+    try:
+        payment = Shipping.objects.get(pk=pk)
+    except payment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ShippingSerializer(payment,context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ShippingSerializer(payment, data=request.data,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        payment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def payments_list(request):
+    """
+ List  payments, or create a new payment.
+ """
+    if request.method == 'GET':
+        data = []
+        nextPage = 1
+        previousPage = 1
+        payments = Payment.objects.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(payments, 5)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            data = paginator.page(1)
+        except EmptyPage:
+            data = paginator.page(paginator.num_pages)
+
+        serializer = PaymentSerializer(data,context={'request': request} ,many=True)
+        if data.has_next():
+            nextPage = data.next_page_number()
+        if data.has_previous():
+            previousPage = data.previous_page_number()
+
+        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api payments/?page=' + str(nextPage), 'prevlink': '/api payments/?page=' + str(previousPage)})
+
+    elif request.method == 'POST':
+        serializer = PaymentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def payments_detail(request, pk):
+    """
+ Retrieve, update or delete a payment by id/pk.
+ """
+    try:
+        payment = Payment.objects.get(pk=pk)
+    except payment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PaymentSerializer(payment,context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = PaymentSerializer(payment, data=request.data,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        payment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

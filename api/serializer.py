@@ -6,7 +6,6 @@ from rest_framework_jwt.settings import api_settings
 
 from api.models import UserProfile, User, Order, Shipping, Payment
 
-
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
@@ -36,7 +35,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         )
         return user
-
 
 class UserLoginSerializer(serializers.Serializer):
 

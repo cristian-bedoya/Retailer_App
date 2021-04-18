@@ -13,18 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
 from api import views
+from django.contrib import admin
 from django.conf.urls import url
-
+from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/signup', views.UserRegistrationView.as_view()),
     url(r'^api/login', views.UserLoginView.as_view()),
+    url(r'^api/profile', views.UserProfileView.as_view()),
+    url(r'^api/users/$', views.users_list),
+    url(r'^api/users/(?P<pk>[0-9]+)$', views.users_detail),
     url(r'^api/orders/$', views.orders_list),
     path('api/orders/<pk>/', views.orders_detail),
-    url(r'^api/profile', views.UserProfileView.as_view()),
+    url(r'^api/order/shippings/$', views.shippings_list),
+    url(r'^api/order/shippings/(?P<pk>[0-9]+)$', views.shippings_detail),
+    url(r'^api/order/payments/$', views.payments_list),
+    url(r'^api/order/payments/(?P<pk>[0-9]+)$', views.payments_detail),
 ]
-#path('api/users/<pk>/', views.orders_detail),
