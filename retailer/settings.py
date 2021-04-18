@@ -48,18 +48,24 @@ INSTALLED_APPS = [
 
 ]
 
+# AUTH_USER_MODEL = 'api.User'
+# REST_FRAMEWORK = {
+#      'DEFAULT_PERMISSION_CLASSES': [
+#          'rest_framework.permissions.IsAuthenticated',
+#          'rest_framework.permissions.IsAdminUser',
+#          ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#      'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+#      )
+# }
+
 AUTH_USER_MODEL = 'api.User'
 REST_FRAMEWORK = {
-     'DEFAULT_PERMISSION_CLASSES': [
-         'rest_framework.permissions.IsAuthenticated',
-         'rest_framework.permissions.IsAdminUser',
-         ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-     )
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        )
 }
 
-from datetime import timedelta
 JWT_AUTH = {
   'JWT_ENCODE_HANDLER':
   'rest_framework_jwt.utils.jwt_encode_handler',

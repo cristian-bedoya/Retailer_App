@@ -76,7 +76,7 @@ class UserProfileView(RetrieveAPIView):
         return Response(response, status=status_code)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def users_list(request):
     """
  List  user, or create a new payment.
@@ -104,7 +104,7 @@ def users_list(request):
         return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api user/?page=' + str(nextPage), 'prevlink': '/api user/?page=' + str(previousPage)})
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def users_detail(request, pk):
     """
  Retrieve, update or delete a payment by id/pk.
@@ -130,7 +130,7 @@ def users_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def orders_list(request):
     """
  List  orders, or create a new order.
@@ -141,7 +141,7 @@ def orders_list(request):
         previousPage = 1
         orders = Order.objects.all()
         page = request.GET.get('page', 1)
-        paginator = Paginator(orders, 5)
+        paginator = Paginator(orders, 10)
         try:
             data = paginator.page(page)
         except PageNotAnInteger:
@@ -165,7 +165,7 @@ def orders_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def orders_detail(request, pk):
     """
  Retrieve, update or delete a order by id/pk.
@@ -207,7 +207,7 @@ def orders_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def shippings_list(request):
     """
  List  shippings, or create a new payment.
@@ -218,7 +218,7 @@ def shippings_list(request):
         previousPage = 1
         shippings = Shipping.objects.all()
         page = request.GET.get('page', 1)
-        paginator = Paginator(shippings, 5)
+        paginator = Paginator(shippings, 20)
         try:
             data = paginator.page(page)
         except PageNotAnInteger:
@@ -242,7 +242,7 @@ def shippings_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def shippings_detail(request, pk):
     """
  Retrieve, update or delete a payment by id/pk.
@@ -268,7 +268,7 @@ def shippings_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def payments_list(request):
     """
  List  payments, or create a new payment.
@@ -279,7 +279,7 @@ def payments_list(request):
         previousPage = 1
         payments = Payment.objects.all()
         page = request.GET.get('page', 1)
-        paginator = Paginator(payments, 5)
+        paginator = Paginator(payments, 20)
         try:
             data = paginator.page(page)
         except PageNotAnInteger:
@@ -303,7 +303,7 @@ def payments_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def payments_detail(request, pk):
     """
  Retrieve, update or delete a payment by id/pk.
