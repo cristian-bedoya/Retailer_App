@@ -24,5 +24,7 @@ urlpatterns = [
     url(r'^api/signup', views.UserRegistrationView.as_view()),
     url(r'^api/login', views.UserLoginView.as_view()),
     url(r'^api/orders/$', views.orders_list),
+    path('api/orders/<pk>/', views.orders_detail),
     url(r'^api/profile', views.UserProfileView.as_view()),
 ]
+#path('api/users/<pk>/', views.orders_detail),

@@ -116,3 +116,40 @@ def orders_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def orders_detail(request, pk):
+    """
+ Retrieve, update or delete a order by id/pk.
+ """
+    if "[" and "]" in pk:
+        pk = pk[1:-1].split(",")
+
+    try:
+        if type(pk) is str:
+            order = Order.objects.get(pk=pk)
+            serializer = OrderSerializer(order,context={'request': request})
+
+        elif isinstance(pk, list):
+            orders = []
+            for i in pk:
+                orders.append(Order.objects.get(pk=i))
+            serializer = OrderSerializer(orders,context={'request': request}, many=True)
+
+    except :
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = OrderSerializer(order, data=request.data,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
