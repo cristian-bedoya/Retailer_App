@@ -67,12 +67,46 @@ class User(AbstractBaseUser):
         db_table = "login"
 
 class UserProfile(models.Model):
-    id_number = models.AutoField(primary_key=True)
+    gov_id = models.IntegerField(primary_key=True,max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    gov_id = models.CharField(max_length=100)
+    gov_id = models.CharField(primary_key=True,max_length=100)
     company = models.CharField(max_length=100)
 
     class Meta:
         db_table = "profile"
+
+class Order(models.Model):
+    id_order = models.AutoField(primary_key=True)
+    date_o = models.DateTimeField(auto_now_add=True)
+    total = models.FloatField()
+    subtotal = models.FloatField()
+    paid = models.CharField(max_length= 20, default='En proceso', blank=True)
+    user_p = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "order"
+
+class Shipping(models.Model):
+    id_shipping = models.AutoField(primary_key=True)
+    address = models.CharField(max_length= 20)
+    city = models.CharField(max_length= 20)
+    state = models.CharField(max_length= 20)
+    country = models.CharField(max_length= 20)
+    cost = models.FloatField()
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    class Meta:
+        db_table = "shipping"
+
+class Payment(models.Model):
+    id_payment = models.AutoField(primary_key=True)
+    date_p = models.DateTimeField(auto_now_add=True)
+    taxes = models.FloatField()
+    total = models.FloatField()
+    status = models.CharField(max_length= 20, default='En proceso', blank=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "payment"
+

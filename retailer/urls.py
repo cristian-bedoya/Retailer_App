@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/signup', views.UserRegistrationView.as_view()),
     url(r'^api/login', views.UserLoginView.as_view()),
+    url(r'^api/orders/$', views.orders_list),
 ]
