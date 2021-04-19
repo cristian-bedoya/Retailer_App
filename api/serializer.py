@@ -10,15 +10,18 @@ JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """User profile Serializer class"""
     class Meta:
+        "set field to serialize"
         model = UserProfile
         fields = ('first_name', 'last_name','gov_id','company')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-
+    """User registration Serializer Class"""
     profile = UserProfileSerializer(required=False)
 
     class Meta:
+        "set field to serialize"
         model = User
         fields = ('email', 'password', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
@@ -37,6 +40,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 class UserLoginSerializer(serializers.Serializer):
+    """User login Serializer Class"""
 
     email = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
@@ -64,16 +68,22 @@ class UserLoginSerializer(serializers.Serializer):
         }
 
 class OrderSerializer(serializers.ModelSerializer):
+    """Order Serializer Class"""
     class Meta:
+        """set field to serialize"""
         model = Order
         fields = '__all__'
 
 class ShippingSerializer(serializers.ModelSerializer):
+    """Order Shipping Class"""
     class Meta:
+        """set field to serialize"""
         model = Shipping
         fields = '__all__'
 
 class PaymentSerializer(serializers.ModelSerializer):
+    """Order Payment Class"""
     class Meta:
+        """set field to serialize"""
         model = Payment
         fields = '__all__'

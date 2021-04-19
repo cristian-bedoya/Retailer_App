@@ -1,7 +1,6 @@
-from django.db import models
+import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-import uuid
 
 class UserManager(BaseUserManager):
     '''
@@ -36,6 +35,7 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser):
+    """Define User class"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(
@@ -63,17 +63,21 @@ class User(AbstractBaseUser):
         db_table = "login"
 
 class UserProfile(models.Model):
-    gov_id = models.IntegerField(primary_key=True,max_length=100)
+    """ Define UserProfile class"""
+
+    gov_id = models.IntegerField(primary_key=True, max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    gov_id = models.CharField(primary_key=True,max_length=100)
     company = models.CharField(max_length=100)
 
     class Meta:
+        """set table name in database"""
         db_table = "profile"
 
 class Order(models.Model):
+    """ Define Order class"""
+
     id_order = models.AutoField(primary_key=True)
     date_o = models.DateTimeField(auto_now_add=True)
     total = models.FloatField()
@@ -82,27 +86,34 @@ class Order(models.Model):
     user_p = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
     class Meta:
+        """set table name in database"""
         db_table = "order"
 
 class Shipping(models.Model):
+    """ Define UserProfile class"""
+
     id_shipping = models.AutoField(primary_key=True)
-    address = models.CharField(max_length= 20)
-    city = models.CharField(max_length= 20)
-    state = models.CharField(max_length= 20)
-    country = models.CharField(max_length= 20)
+    address = models.CharField(max_length=20)
+    city = models.CharField(max_length=20)
+    state = models.CharField(max_length=20)
+    country = models.CharField(max_length=20)
     cost = models.FloatField()
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     class Meta:
+        """set table name in database"""
         db_table = "shipping"
 
 class Payment(models.Model):
+    """ Define UserProfile class"""
+
     id_payment = models.AutoField(primary_key=True)
     date_p = models.DateTimeField(auto_now_add=True)
     taxes = models.FloatField()
     total = models.FloatField()
-    status = models.CharField(max_length= 20, default='En proceso', blank=True)
+    status = models.CharField(max_length=20, default='En proceso', blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
     class Meta:
+        """set table name in database"""
         db_table = "payment"
 
