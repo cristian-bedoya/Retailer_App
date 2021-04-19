@@ -71,7 +71,6 @@ JWT_AUTH = {
   'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
   'JWT_RESPONSE_PAYLOAD_HANDLER':
   'rest_framework_jwt.utils.jwt_response_payload_handler',
- 
   'JWT_SECRET_KEY': 'SECRET_KEY',
   'JWT_GET_USER_SECRET_KEY': None,
   'JWT_PUBLIC_KEY': None,
@@ -128,11 +127,6 @@ WSGI_APPLICATION = 'retailer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "retailer_db",
-        'USER': "retailer_user",
-        'PASSWORD': "retailer_pswd",
-        'HOST': "localhost",
-        'PORT': "3306",
         'NAME': getenv("DB_NAME"),
         'USER': getenv("DB_USER"),
         'PASSWORD': getenv("DB_PASSWORD"),

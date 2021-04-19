@@ -4,14 +4,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from .models import UserProfile , Order, Payment, Shipping
+from .models import UserProfile, Order, Payment, Shipping
 from .serializer import UserProfileSerializer, UserRegistrationSerializer, UserLoginSerializer
 from .serializer import OrderSerializer, ShippingSerializer, PaymentSerializer
 
 class UserRegistrationView(CreateAPIView):
+    """ Class for user registration """
 
     serializer_class = UserRegistrationSerializer
     permission_classes = (AllowAny,)
@@ -27,10 +27,10 @@ class UserRegistrationView(CreateAPIView):
             'status code' : status_code,
             'message': 'User registered  successfully',
             }
-        
         return Response(response, status=status_code)
 
 class UserLoginView(RetrieveAPIView):
+    """ Class for  User login"""
 
     permission_classes = (AllowAny,)
     serializer_class = UserLoginSerializer
@@ -49,6 +49,7 @@ class UserLoginView(RetrieveAPIView):
         return Response(response, status=status_code)
 
 class UserProfileView(RetrieveAPIView):
+    """ Class for User profile view"""
 
     permission_classes = (IsAuthenticated,)
     authentication_class = JSONWebTokenAuthentication
@@ -65,13 +66,13 @@ class UserProfileView(RetrieveAPIView):
                 'gov_id':user_profile.gov_id,
                 }
 
-        except Exception as e:
+        except Exception as err1:
             status_code = status.HTTP_400_BAD_REQUEST
             response = {
                 'success': 'false',
                 'status code': status.HTTP_400_BAD_REQUEST,
                 'message': 'User does not exists',
-                'error': str(e)
+                'error': str(err1)
                 }
         return Response(response, status=status_code)
 
@@ -81,27 +82,29 @@ def users_list(request):
     """
  List  user, or create a new payment.
  """
-    if request.method == 'GET':
-        data = []
-        nextPage = 1
-        previousPage = 1
-        user = UserProfile.objects.all()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(user, 5)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            data = paginator.page(1)
-        except EmptyPage:
-            data = paginator.page(paginator.num_pages)
+    
+    data = []
+    next_page = 1
+    previous_page = 1
+    user = UserProfile.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(user, 5)
+    try:
+        data = paginator.page(page)
+    except PageNotAnInteger:
+        data = paginator.page(1)
+    except EmptyPage:
+        data = paginator.page(paginator.num_pages)
 
-        serializer = UserProfileSerializer(data,context={'request': request} ,many=True)
-        if data.has_next():
-            nextPage = data.next_page_number()
-        if data.has_previous():
-            previousPage = data.previous_page_number()
+    serializer = UserProfileSerializer(data,context={'request': request}, many=True)
+    if data.has_next():
+        next_page = data.next_page_number()
+    if data.has_previous():
+        previous_page = data.previous_page_number()
 
-        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api user/?page=' + str(nextPage), 'prevlink': '/api user/?page=' + str(previousPage)})
+    return Response({'data': serializer.data, 'count': paginator.count,
+                     'numpages' : paginator.num_pages, 'nextlink': '/api user/?page=' + str(next_page), 
+                     'prevlink': '/api user/?page=' + str(previous_page)})
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -137,8 +140,8 @@ def orders_list(request):
  """
     if request.method == 'GET':
         data = []
-        nextPage = 1
-        previousPage = 1
+        next_page = 1
+        previous_page = 1
         orders = Order.objects.all()
         page = request.GET.get('page', 1)
         paginator = Paginator(orders, 5)
@@ -149,13 +152,15 @@ def orders_list(request):
         except EmptyPage:
             data = paginator.page(paginator.num_pages)
 
-        serializer = OrderSerializer(data,context={'request': request} ,many=True)
+        serializer = OrderSerializer(data, context={'request': request}, many=True)
         if data.has_next():
-            nextPage = data.next_page_number()
+            next_page = data.next_page_number()
         if data.has_previous():
-            previousPage = data.previous_page_number()
+            previous_page = data.previous_page_number()
 
-        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api/orders/?page=' + str(nextPage), 'prevlink': '/api/orders/?page=' + str(previousPage)})
+        return Response({'data': serializer.data , 'count': paginator.count,
+                         'numpages' : paginator.num_pages, 'nextlink': '/api/orders/?page=' + str(next_page),
+                         'prevlink': '/api/orders/?page=' + str(previous_page)})
 
     elif request.method == 'POST':
         serializer = OrderSerializer(data=request.data)
@@ -168,12 +173,12 @@ def orders_list(request):
 @permission_classes([IsAuthenticated])
 def orders_detail(request, pk):
     """
- Retrieve, update or delete a order by id/pk.
- """
+    Retrieve, update or delete a order by id/pk.
+    """
     if pk == "serializers":
         return
 
-    if "[" and "]" in pk:
+    if pk[0] == "[" and pk[-1] == "]":
         pk = pk[1:-1].split(",")
 
     try:
@@ -185,9 +190,9 @@ def orders_detail(request, pk):
             orders = []
             for i in pk:
                 orders.append(Order.objects.get(pk=i))
-            serializer = OrderSerializer(orders,context={'request': request}, many=True)
+            serializer = OrderSerializer(orders, context={'request': request}, many=True)
 
-    except :
+    except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -196,7 +201,7 @@ def orders_detail(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = OrderSerializer(order, data=request.data,context={'request': request})
+        serializer = OrderSerializer(order, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -214,8 +219,8 @@ def shippings_list(request):
  """
     if request.method == 'GET':
         data = []
-        nextPage = 1
-        previousPage = 1
+        next_page = 1
+        previous_page = 1
         shippings = Shipping.objects.all()
         page = request.GET.get('page', 1)
         paginator = Paginator(shippings, 5)
@@ -226,13 +231,16 @@ def shippings_list(request):
         except EmptyPage:
             data = paginator.page(paginator.num_pages)
 
-        serializer = ShippingSerializer(data,context={'request': request} ,many=True)
+        serializer = ShippingSerializer(data, context={'request': request}, many=True)
         if data.has_next():
-            nextPage = data.next_page_number()
+            next_page = data.next_page_number()
         if data.has_previous():
-            previousPage = data.previous_page_number()
+            previous_page = data.previous_page_number()
 
-        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api shippings/?page=' + str(nextPage), 'prevlink': '/api shippings/?page=' + str(previousPage)})
+        return Response({'data': serializer.data, 'count': paginator.count,
+                         'numpages' : paginator.num_pages,
+                         'nextlink': '/api shippings/?page=' + str(next_page),
+                         'prevlink': '/api shippings/?page=' + str(previous_page)})
 
     elif request.method == 'POST':
         serializer = ShippingSerializer(data=request.data)
@@ -253,11 +261,11 @@ def shippings_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ShippingSerializer(payment,context={'request': request})
+        serializer = ShippingSerializer(payment, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ShippingSerializer(payment, data=request.data,context={'request': request})
+        serializer = ShippingSerializer(payment, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -275,8 +283,8 @@ def payments_list(request):
  """
     if request.method == 'GET':
         data = []
-        nextPage = 1
-        previousPage = 1
+        next_page = 1
+        previous_page = 1
         payments = Payment.objects.all()
         page = request.GET.get('page', 1)
         paginator = Paginator(payments, 5)
@@ -287,13 +295,16 @@ def payments_list(request):
         except EmptyPage:
             data = paginator.page(paginator.num_pages)
 
-        serializer = PaymentSerializer(data,context={'request': request} ,many=True)
+        serializer = PaymentSerializer(data, context={'request': request}, many=True)
         if data.has_next():
-            nextPage = data.next_page_number()
+            next_page = data.next_page_number()
         if data.has_previous():
-            previousPage = data.previous_page_number()
+            previous_page = data.previous_page_number()
 
-        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api payments/?page=' + str(nextPage), 'prevlink': '/api payments/?page=' + str(previousPage)})
+        return Response({'data': serializer.data, 'count': paginator.count,
+                         'numpages' : paginator.num_pages,
+                         'nextlink': '/api payments/?page=' + str(next_page),
+                         'prevlink': '/api payments/?page=' + str(previous_page)})
 
     elif request.method == 'POST':
         serializer = PaymentSerializer(data=request.data)
@@ -314,11 +325,11 @@ def payments_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PaymentSerializer(payment,context={'request': request})
+        serializer = PaymentSerializer(payment, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = PaymentSerializer(payment, data=request.data,context={'request': request})
+        serializer = PaymentSerializer(payment, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
