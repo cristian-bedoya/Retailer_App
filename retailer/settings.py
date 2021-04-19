@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from os import getenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,13 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9r$44w#@le-&e$cwmj0_o_h8df3mnib^=vi+1394$n1x1&fm*4'
+
+SECRET_KEY = getenv("KEY_API")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -59,7 +60,6 @@ REST_FRAMEWORK = {
      )
 }
 
-from datetime import timedelta
 JWT_AUTH = {
   'JWT_ENCODE_HANDLER':
   'rest_framework_jwt.utils.jwt_encode_handler',
@@ -133,6 +133,11 @@ DATABASES = {
         'PASSWORD': "retailer_pswd",
         'HOST': "localhost",
         'PORT': "3306",
+        'NAME': getenv("DB_NAME"),
+        'USER': getenv("DB_USER"),
+        'PASSWORD': getenv("DB_PASSWORD"),
+        'HOST': getenv("DB_HOST"),
+        'PORT': getenv("DB_PORT"),
     }
 }
 

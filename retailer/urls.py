@@ -27,8 +27,8 @@ urlpatterns = [
     url(r'^api/users/(?P<pk>[0-9]+)$', views.users_detail),
     url(r'^api/orders/$', views.orders_list),
     path('api/orders/<pk>/', views.orders_detail),
-    url(r'^api/order/shippings/$', views.shippings_list),
-    url(r'^api/order/shippings/(?P<pk>[0-9]+)$', views.shippings_detail),
-    url(r'^api/order/payments/$', views.payments_list),
-    url(r'^api/order/payments/(?P<pk>[0-9]+)$', views.payments_detail),
+    url(r'^api/shippings/$', views.shippings_list),
+    url(r'^api/shippings/(?P<pk>[0-9]+)$', views.shippings_detail),
+    url(r'^api/payments/$', views.payments_list),
+    url(r'^api/payments/(?P<pk>[0-9]+)$', views.payments_detail),
 ]
