@@ -13,13 +13,13 @@ Now, follow this steps:
 1. Choose a place in your computer and clone this repository. Type in your terminal:
 
 ```
-$ git clone https://github.com/cristian-bedoya/+.git
+$ git clone https://github.com/cristian-bedoya/Retailer_App.git
 ```
 
 2. Once the repository has been downloaded, enter to it and create a python virtual enviroment. (This step is not required but it is highly recomended).
 
 ```
-$ cd api
+$ cd Retailer_App
 $ python3 -m venv env
 
 ```
